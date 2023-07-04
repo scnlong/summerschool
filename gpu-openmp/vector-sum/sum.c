@@ -1,9 +1,10 @@
 #include <stdio.h>
-
-#define NX 102400
+#include <mpi.h>
+/* #define NX 102400 */
 
 int main(void)
 {
+    int NX = 102400;
     double vecA[NX], vecB[NX], vecC[NX];
 
     /* Initialization of the vectors */
@@ -14,6 +15,14 @@ int main(void)
 
     // TODO: Implement vector addition vecC = vecA + vecB and use OpenMP
     //       for computing it in the device
+
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute
+for (int i = 0; i < NX; i++) {
+   vecC[i] = vecA[i] + vecB[i];
+}
+
 
     double sum = 0.0;
     /* Compute the check value */

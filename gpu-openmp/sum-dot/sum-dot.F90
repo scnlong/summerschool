@@ -1,4 +1,5 @@
 program vectorsum
+  use omp_lib
   implicit none
   integer, parameter :: rk = selected_real_kind(12)
   integer, parameter :: ik = selected_int_kind(9)
@@ -17,15 +18,21 @@ program vectorsum
   !TODO start: create a data region and offload the two computations
   !so that data is kept in the device between the computations
 
+  !$omp target data map(to:vecA,vecB) map(from:vecC)
+  !$omp target teams distribute simd
   do i = 1, nx
      vecC(i) = vecA(i) + vecB(i)
   end do
+  !$omp end target teams distribute simd
 
   res = 0.0
 
+  !$omp target teams distribute simd reduction(+:res)
   do i = 1, nx
      res = res + vecC(i) * vecB(i)
   end do
+  !$omp end target teams distribute simd
+  !$omp end target data
 
   !TODO end
 

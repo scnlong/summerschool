@@ -23,23 +23,15 @@ int main(int argc, char *argv[])
 
     // Send and receive messages as defined in exercise
     if (myid == 0) {
-        int dest = 1;
-        int src = 1;
-        int stag = 1;
-        int rtag = 2;
-        MPI_Send(message.data(), msgsize, MPI_INT, dest, stag, MPI_COMM_WORLD);
-        MPI_Recv(receiveBuffer.data(), arraysize, MPI_INT, src, rtag, MPI_COMM_WORLD,
+        MPI_Send(message.data(), msgsize, MPI_INT, 1, 1, MPI_COMM_WORLD);
+        MPI_Recv(receiveBuffer.data(), arraysize, MPI_INT, 1, 2, MPI_COMM_WORLD,
                  &status);
         MPI_Get_count(&status, MPI_INT, &nrecv);
         printf("Rank %i received %i elements, first %i\n", myid, nrecv, receiveBuffer[0]);
     } else if (myid == 1) {
-        int dest = 0;
-        int src = 0;
-        int stag = 1;
-        int rtag = 2;
-        MPI_Send(message.data(), msgsize, MPI_INT, dest, stag, MPI_COMM_WORLD);
-        MPI_Recv(receiveBuffer.data(), arraysize, MPI_INT, src, rtag, MPI_COMM_WORLD,
+        MPI_Recv(receiveBuffer.data(), arraysize, MPI_INT, 0, 1, MPI_COMM_WORLD,
                  &status);
+        MPI_Send(message.data(), msgsize, MPI_INT, 0, 2, MPI_COMM_WORLD);
         MPI_Get_count(&status, MPI_INT, &nrecv);
         printf("Rank %i received %i elements, first %i\n", myid, nrecv, receiveBuffer[0]);
     }

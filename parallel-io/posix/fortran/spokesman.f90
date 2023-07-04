@@ -39,7 +39,8 @@ contains
 
     ! TODO: Implement a function that writers the whole array of elements
     !       to a file so that single process is responsible for the file io
-
+    
+    call mpi_gather()
   end subroutine single_writer
 
 end program pario

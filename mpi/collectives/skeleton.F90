@@ -22,11 +22,11 @@ program coll_exer
   ! Initialize message buffers
   call init_buffers
 
+  if (rank == 0) then
+
+  call MPI_Bcast()
   ! Print data that will be sent
   call print_buffers(sendbuf)
-
-  ! TODO: use a single collective communication call
-  !       (and maybe prepare some parameters for the call)
 
   ! Print data that was received
   ! TODO: use correct buffer

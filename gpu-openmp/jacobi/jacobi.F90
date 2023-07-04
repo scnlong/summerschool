@@ -24,10 +24,11 @@ program jacobi
 
   t0 = omp_get_wtime()
   ! Iterate
+  !$omp target teams distribute
   do iter = 1, niter
 
     ! TODO start: offload the two stencil updates
-
+    !$omp simd collapse(2)
     ! Stencil update 1
     do j = 2, ny - 1
       do i = 2, nx - 1
@@ -35,18 +36,20 @@ program jacobi
                                u(i, j + 1) - 2.0 * u(i, j) + u(i, j - 1))
       end do
     end do
-
+    !$omp end simd
+    
     ! "Swap" the arrays, stencil update 2
+    !$omp simd collapse(2)
     do j = 2, ny - 1
       do i = 2, nx - 1
         u(i, j) = factor * (unew(i + 1, j) - 2.0 * unew(i, j) + unew(i - 1, j) + &
                             unew(i, j + 1) - 2.0 * unew(i, j) + unew(i, j - 1))
       end do
     end do
-
-    ! TODO end
+    !$omp end simd
 
   end do
+  !$omp end target teams distribute
 
   t1 = omp_get_wtime();
   ! Check final result

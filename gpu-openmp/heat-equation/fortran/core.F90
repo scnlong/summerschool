@@ -1,6 +1,7 @@
 ! Main solver routines for heat equation solver
 module core
   use heat
+  use omp_lib 
 
 contains
 
@@ -32,7 +33,9 @@ contains
     ! fixed boundary conditions, the outermost gridpoints are not
     ! updated.
 
+    !$omp target teams distribute map(to:prevdata) map(from:currdata)
     do j = 1, ny
+       !$omp simd
        do i = 1, nx
           currdata(i, j) = prevdata(i, j) + a * dt * &
                & ((prevdata(i-1, j) - 2.0 * prevdata(i, j) + &
@@ -40,8 +43,10 @@ contains
                &  (prevdata(i, j-1) - 2.0 * prevdata(i, j) + &
                &   prevdata(i, j+1)) / dy**2)
        end do
+       !$omp end simd
     end do
-    
+    !$omp end target teams distribute
+
   end subroutine evolve
 
 end module core

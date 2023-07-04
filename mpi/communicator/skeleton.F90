@@ -4,8 +4,9 @@ program coll_exer
 
   integer, parameter :: n_mpi_tasks = 4
 
-  integer :: ntasks, rank, ierr, color
+  integer :: ntasks, rank, ierr, color, sub_rank, tag1, tag2
   type(mpi_comm) :: sub_comm
+  type(mpi_status) :: status_1,status_2 
   integer, dimension(2*n_mpi_tasks) :: sendbuf, recvbuf
   integer, dimension(2*n_mpi_tasks**2) :: printbuf
 
@@ -29,6 +30,28 @@ program coll_exer
   ! TODO: create a new communicator and
   !       use a single collective communication call
   !       (and maybe prepare some parameters for the call)
+  if (rank<2) then
+     color = 111
+  else
+     color = 222
+  endif 
+
+  call MPI_Comm_split(MPI_COMM_WORLD,color,rank,sub_comm,ierr)
+  call MPI_Comm_rank(sub_comm,sub_rank)
+
+!  if (color==111 .and. sub_rank==1) then
+!     call MPI_Reduce(sendbuf,recvbuf,2*n_mpi_tasks,MPI_INTEGER,MPI_SUM,0,sub_comm,ierr)
+!  elseif (color==111 .and. sub_rank==0) then
+!     call MPI_Reduce(sendbuf,recvbuf,2*n_mpi_tasks,MPI_INTEGER,MPI_SUM,0,sub_comm,ierr)
+!  elseif (color==222 .and. sub_rank==0) then
+!     call MPI_Reduce(sendbuf,recvbuf,2*n_mpi_tasks,MPI_INTEGER,MPI_SUM,0,sub_comm,ierr)
+!  elseif (color==222 .and. sub_rank==1) then
+!     call MPI_Reduce(sendbuf,recvbuf,2*n_mpi_tasks,MPI_INTEGER,MPI_SUM,0,sub_comm,ierr)
+!  else
+!     continue
+!  endif
+
+  call MPI_Reduce(sendbuf,recvbuf,2*n_mpi_tasks,MPI_INTEGER,MPI_SUM,0,sub_comm,ierr)
 
   ! Print data that was received
   call print_buffers(recvbuf)

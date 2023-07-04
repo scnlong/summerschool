@@ -4,13 +4,21 @@
 
 // TODO: add a device kernel that calculates y = a * x + y
 
+__global__ void do_cal(int n, float a, float *x, float *y, float *y_res ){
+    int i = blockIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+    int increase = blockDim.x * blockDim.y * gridDim.x * gridDim.y; 
+    for (; i < n; i+=increase){
+        y_res[i] = a * x[i] + y[i];
+    }
+}
+
 int main(void)
 {
     int i;
     const int n = 10000;
     float a = 3.4;
     float x[n], y[n], y_ref[n];
-    float *x_, *y_;
+    float *x_, *y_, *y_res;
 
     // initialise data and calculate reference values on CPU
     for (i=0; i < n; i++) {
@@ -20,15 +28,24 @@ int main(void)
     }
 
     // TODO: allocate vectors x_ and y_ on the GPU
+    hipMalloc((void **)&x_, sizeof(float) * n);
+    hipMalloc((void **)&y_, sizeof(float) * n);
+    hipMalloc((void **)&y_res, sizeof(float) * n);
     // TODO: copy initial values from CPU to GPU (x -> x_ and y -> y_)
-
+    hipMemcpy(x_, x, sizeof(float) * n, hipMemcpyHostToDevice);
+    hipMemcpy(y_, y, sizeof(float) * n, hipMemcpyHostToDevice);
     // TODO: define grid dimensions
+
+    dim3 blocks(8);
+    dim3 threads(64,4);
+
     // TODO: launch the device kernel
-    hipLaunchKernelGGL(...);
-
+    //hipLaunchKernelGGL();
+    do_cal<<<blocks,threads>>>(n,a,x_,y_,y_res);
     // TODO: copy results back to CPU (y_ -> y)
-
+    hipMemcpy(y,y_res, sizeof(float) * n, hipMemcpyDeviceToHost);
     // confirm that results are correct
+
     float error = 0.0;
     float tolerance = 1e-6;
     float diff;
@@ -40,6 +57,10 @@ int main(void)
     printf("total error: %f\n", error);
     printf("  reference: %f at (42)\n", y_ref[42]);
     printf("     result: %f at (42)\n", y[42]);
+    
+    hipFree(x_);
+    hipFree(y_);
+    hipFree(y_res);
 
     return 0;
 }
