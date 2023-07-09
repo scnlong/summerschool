@@ -13,16 +13,20 @@ program exchange
 
   message = myid
   receiveBuffer = -1
+  nrecv = msgsize
 
   ! TODO: Implement sending and receiving as defined in the assignment
   ! Send msgsize elements from the array "message", and receive into
   ! "receiveBuffer"
-  if (myid == 0) then
 
+  if (myid == 0) then
+     call mpi_send(message(1:msgsize),msgsize,MPI_INT,1,1,MPI_COMM_WORLD,rc)
+     call mpi_recv(receiveBuffer(1:msgsize),msgsize,MPI_INT,1,2,MPI_COMM_WORLD,status,rc)
      write(*,'(A10,I3,A10,I3, A17, I3)') 'Rank: ', myid, &
           ' received ', nrecv, ' elements, first ', receiveBuffer(1)
   else if (myid == 1) then
-
+     call mpi_recv(receiveBuffer(1:msgsize),msgsize,MPI_INT,0,1,MPI_COMM_WORLD,status,rc)
+     call mpi_send(message(1:msgsize),msgsize,MPI_INT,0,2,MPI_COMM_WORLD,rc)
      write(*,'(A10,I3,A10,I3, A17, I3)') 'Rank: ', myid, &
           ' received ', nrecv, ' elements, first ', receiveBuffer(1)
   end if
