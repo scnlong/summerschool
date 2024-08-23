@@ -1,6 +1,6 @@
 ---
 title:  OpenMP interoperability with libraries and HIP
-event:  CSC Summer School in High-Performance Computing 2023
+event:  CSC Summer School in High-Performance Computing 2024
 lang:   en
 ---
 
@@ -58,7 +58,7 @@ double *x, *y;
 #pragma omp target data map(to:x[:n]), map(from:y[:n]))
 {
     #pragma omp target data use_device_ptr(x, y) {
-        cublasDaxpy(hipblashandler, a, x, 1, y, 1);
+        hipblasDaxpy(hipblashandler, a, x, 1, y, 1);
     }
 }
 ```
@@ -138,7 +138,6 @@ extern "C" void daxpy(int n, double a,
 <small>
 <div class="column">
 ```c
-! call_hip_from_openmp.f90
 MODULE HIP_INTERFACES
     INTERFACE
       subroutine f_daxpy(n, a, x, y) bind(C,name=daxpy)
@@ -156,14 +155,14 @@ END MODULE HIP_INTERFACES
  ...
  integer(c_int) :: n
  double(c_double) :: a
+
+ !$omp target data map(alloc:x[0:n], y[0:n])
  ...
 
 !$omp target data use_device_ptr(x, y)
-
   call f_daxpy(n,a,c_loc(x),c_loc(y))
 
 ```
-
 </div>
 
 <div class="column">

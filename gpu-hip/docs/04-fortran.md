@@ -1,6 +1,6 @@
 ---
 title:  Fortran and HIP
-event:  CSC Summer School in High-Performance Computing 2023
+event:  CSC Summer School in High-Performance Computing 2024
 lang:   en
 ---
 
@@ -14,10 +14,10 @@ lang:   en
     - HIP functions are callable from C, using `extern C`, compile hipcc
     - interoperability with Fortran via `iso_c_binding` 
 * Fortran + HIP:
-    - link with Fortran
+    - link with  hipcc or Fortran
     - needs wrappers and interfaces for all HIP calls
 * Hipfort:
-    - link with hipcc
+    - link with hipcc or fortran
     - Fortran Interface for GPU Kernel Libraries
       - HIP: HIP runtime, hipBLAS, hipSPARSE, hipFFT, hipRAND, hipSOLVER
       - ROCm: rocBLAS, rocSPARSE, rocFFT, rocRAND, rocSOLVER
@@ -86,7 +86,6 @@ program saxpy
   integer(c_size_t), parameter :: Nbytes = N*bytes_per_element
   real, allocatable,target,dimension(:) :: x, y
   real, parameter ::  a=2.0
-  real :: x_d(N), y_d(N)
 
 ```
 </div>

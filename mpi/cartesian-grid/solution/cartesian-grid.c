@@ -4,16 +4,17 @@
 
 
 int main(int argc, char* argv[]) {
-    int ntasks, myid, irank;
+    int ntasks, rank, irank;
     int dims[2] = {0};      /* Dimensions of the grid */
     int coords[2] = {0};    /* Coordinates in the grid */
     int neighbors[4] = {0}; /* Neighbors in 2D grid */
     int period[2] = {1, 1};
-    MPI_Comm comm2d;
+    MPI_Comm comm2d;        /* Cartesian communicator */
+    int crank;              /* MPI rank in the Cartesian communicator */
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &ntasks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     /* Determine the process grid (dims[0] x dims[1] = ntasks) */
     if (ntasks < 16) {
@@ -36,21 +37,22 @@ int main(int argc, char* argv[]) {
 
     /* Create the 2D Cartesian communicator */
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, period, 1, &comm2d);
+    MPI_Comm_rank(comm2d, &crank);
 
     /* Find out and store the neighboring ranks */
     MPI_Cart_shift(comm2d, 0, 1, &neighbors[0], &neighbors[1]);
     MPI_Cart_shift(comm2d, 1, 1, &neighbors[2], &neighbors[3]);
 
     /* Find out and store also the Cartesian coordinates of a rank */
-    MPI_Cart_coords(comm2d, myid, 2, coords);
+    MPI_Cart_coords(comm2d, crank, 2, coords);
 
     for (irank = 0; irank < ntasks; irank++) {
-        if (myid == irank) {
+        if (crank == irank) {
             printf("%3i = %2i %2i neighbors=%3i %3i %3i %3i\n",
-                   myid, coords[0], coords[1], neighbors[0], neighbors[1],
+                   crank, coords[0], coords[1], neighbors[0], neighbors[1],
                    neighbors[2], neighbors[3]);
         }
-        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(comm2d);
     }
 
     MPI_Finalize();

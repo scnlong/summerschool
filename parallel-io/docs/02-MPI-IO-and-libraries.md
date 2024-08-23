@@ -1,10 +1,15 @@
 ---
 title:  MPI-IO and I/O libraries
-event:  CSC Summer School in High-Performance Computing 2023
+event:  CSC Summer School in High-Performance Computing 2024
 lang:   en
 ---
 
 # MPI-IO {.section}
+
+# I/O layers
+
+
+![](img/io-layers.png)
 
 # MPI-IO
 

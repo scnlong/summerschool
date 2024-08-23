@@ -1,6 +1,6 @@
 ---
 title:  OpenMP library routines and data sharing
-event:  CSC Summer School in High-Performance Computing 2023
+event:  CSC Summer School in High-Performance Computing 2024
 lang:   en
 ---
 
@@ -71,7 +71,7 @@ lang:   en
 -->
 
 <div class=column>
-```fortran
+```fortranfree
 program hello
   use omp_lib
   integer :: omp_rank
@@ -92,7 +92,7 @@ end program hello
 ```c
 #include <stdio.h>
 #include <omp.h>
-int main(int argc, char argv[]) {
+int main(int argc, char* argv[]) {
   int omp_rank;
 #pragma omp parallel
   {
@@ -138,7 +138,7 @@ int main(int argc, char argv[]) {
 #include <omp.h>
 #include <unistd.h>
 
-int main(int argc, char argv[]) {
+int main(int argc, char* argv[]) {
   int omp_rank;
 #pragma omp parallel
   {
@@ -195,7 +195,7 @@ int main(int argc, char argv[]) {
 #include <omp.h>
 #include <unistd.h>
 
-int main(int argc, char argv[]) {
+int main(int argc, char* argv[]) {
   int omp_rank;
 #pragma omp parallel private(omp_rank)
   {

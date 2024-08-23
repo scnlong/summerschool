@@ -1,16 +1,16 @@
 ---
 title:  HIP and GPU kernels
-event:  CSC Summer School in High-Performance Computing 2023
+event:  CSC Summer School in High-Performance Computing 2024
 lang:   en
 ---
 
 # HIP
 
-- Heterogeneous-computing Interface for Portability
+- Heterogeneous-Computing Interface for Portability
     - AMD effort to offer a common programming interface that works on both
       CUDA and ROCm devices
 - HIP is a C++ runtime API and kernel programming language
-    - standard C++ syntax, uses nvcc/hcc compiler in the background
+    - standard C++ syntax, uses nvcc/(amd clang) compiler in the background
     - almost a one-on-one clone of CUDA from the user perspective
     - allows one to write portable GPU codes
 - AMD offers also a wide set of optimised libraries and tools
@@ -111,19 +111,19 @@ int main(void)
 
 <div class="column">
 ![](img/grid-threads.png)
-
+    
+<small>
 - Built-in variables to be used within a kernel:
     - `threadIdx`, `blockIDx`, `blockDim`, `gridDim`
+</small>
 </div>
 
 
 # Kernels
 
 - Kernel is a (device) function to be executed by the GPU
-- Function should be of `void` type and needs to be declared with the
-  `__global__` or `__device__` attribute
-- All pointers passed to the kernel need to point to memory accessible from
-  the device
+- Needs to be declared with the `__global__` (has to be of `void` type) or `__device__` attribute
+- All pointers passed to the kernel need to point to memory accessible from the device
 - Unique thread and block IDs can be used to distribute work
 
 
